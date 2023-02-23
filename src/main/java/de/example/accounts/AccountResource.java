@@ -1,9 +1,12 @@
 package de.example.accounts;
 
+import de.example.accounts.validation.EqualPasswords;
 import org.jboss.resteasy.reactive.RestPath;
 import org.jboss.resteasy.reactive.RestResponse;
 
 import javax.inject.Inject;
+import javax.validation.Valid;
+import javax.validation.constraints.Email;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -45,7 +48,7 @@ public class AccountResource {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     public RestResponse createUser(@Context UriInfo uriInfo,
-                                   NewAccount newAccount) {
+                                   @Valid NewAccount newAccount) {
         Long id = accountRepository.create(newAccount.firstname,
                 newAccount.lastname,
                 newAccount.email,
@@ -58,11 +61,13 @@ public class AccountResource {
         return RestResponse.ResponseBuilder.created(location).build();
     }
 
+    @EqualPasswords
     public static class NewAccount {
         public String firstname;
         public String lastname;
         public String email;
         public LocalDate birthday;
         public String password;
+        public String passwordRepetition;
     }
 }

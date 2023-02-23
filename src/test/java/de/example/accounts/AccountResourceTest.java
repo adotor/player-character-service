@@ -121,6 +121,7 @@ public class AccountResourceTest {
         account.email = "chuck@norris.com";
         account.birthday = LocalDate.parse("1940-03-10");
         account.password = "TopSecret";
+        account.passwordRepetition = "TopSecret";
         return account;
     }
 }

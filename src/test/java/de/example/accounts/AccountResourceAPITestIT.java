@@ -129,6 +129,14 @@ public class AccountResourceAPITestIT {
                 .statusCode(RestResponse.StatusCode.NOT_FOUND);
     }
 
+    @Test
+    @Order(9)
+    public void itRejectsNewUsersWithNonMatchingPasswords() {
+        given().contentType(ContentType.JSON)
+                .body(aJSONAccountWithNonMatchingPasswords())
+                .when().post("/account/users")
+                .then().statusCode(RestResponse.StatusCode.BAD_REQUEST);
+    }
 
     private void createAccount(String json) {
         given().contentType(ContentType.JSON)
@@ -144,7 +152,8 @@ public class AccountResourceAPITestIT {
                 "\"lastname\": \"Norris\"," +
                 "\"email\": \"chuck@norris.com\"," +
                 "\"birthday\": \"1940-03-10\"," +
-                "\"password\": \"TopSecret\"" +
+                "\"password\": \"TopSecret\"," +
+                "\"passwordRepetition\": \"TopSecret\"" +
                 "}";
     }
 
@@ -154,7 +163,19 @@ public class AccountResourceAPITestIT {
                 "\"lastname\": \"Hamilton\"," +
                 "\"email\": \"linda@hamilton.com\"," +
                 "\"birthday\": \"1956-09-26\"," +
-                "\"password\": \"UltraViolet\"" +
+                "\"password\": \"UltraViolet\"," +
+                "\"passwordRepetition\": \"UltraViolet\"" +
+                "}";
+    }
+
+    private String aJSONAccountWithNonMatchingPasswords() {
+        return "{" +
+                "\"firstname\": \"Chuck\"," +
+                "\"lastname\": \"Norris\"," +
+                "\"email\": \"INVALID_MAIL\"," +
+                "\"birthday\": \"1940-03-10\"," +
+                "\"password\": \"TopSecret\"," +
+                "\"passwordRepetition\": \"WrongPassword\"" +
                 "}";
     }
 }
