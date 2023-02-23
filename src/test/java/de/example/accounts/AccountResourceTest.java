@@ -15,7 +15,7 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
@@ -37,7 +37,7 @@ public class AccountResourceTest {
 
         List<Account> accounts = sut.listUsers();
 
-        assertThat(accounts, equalTo(expectedAccounts));
+        assertThat(accounts, is(expectedAccounts));
         Mockito.verify(accountRepository).listAll();
     }
 
@@ -47,7 +47,7 @@ public class AccountResourceTest {
 
         Account account = sut.listUsers(1L);
 
-        assertThat(account, equalTo(anAccount()));
+        assertThat(account, is(anAccount()));
         Mockito.verify(accountRepository).get(1L);
     }
 
@@ -82,7 +82,7 @@ public class AccountResourceTest {
                 "chuck@norris.com",
                 LocalDate.parse("1940-03-10"),
                 "TopSecret");
-        assertThat(restResponse.getLocation().getRawPath(), equalTo("test/users/0"));
+        assertThat(restResponse.getLocation().getRawPath(), is("test/users/0"));
     }
 
     private Account anAccount() {

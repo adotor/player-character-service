@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 
 @QuarkusTest
 class AccountEntityTest {
@@ -21,11 +21,11 @@ class AccountEntityTest {
                 aPassword());
 
         // Discussion: Test vs. Spec (Single Assert)
-        assertThat(sut.firstname, equalTo(aFirstname()));
-        assertThat(sut.lastname, equalTo(aLastname()));
-        assertThat(sut.email, equalTo(anEmail()));
-        assertThat(sut.birthday, equalTo(aDate()));
-        assertThat(sut.password, equalTo(aPassword()));
+        assertThat(sut.firstname, is(aFirstname()));
+        assertThat(sut.lastname, is(aLastname()));
+        assertThat(sut.email, is(anEmail()));
+        assertThat(sut.birthday, is(aDate()));
+        assertThat(sut.password, is(aPassword()));
     }
 
     @Test
@@ -41,12 +41,12 @@ class AccountEntityTest {
         Account account = sut.asAccount();
 
         // Discussion: Test vs. Spec (Single Assert)
-        assertThat(account.id, equalTo(anID()));
-        assertThat(account.firstname, equalTo(aFirstname()));
-        assertThat(account.lastname, equalTo(aLastname()));
-        assertThat(account.email, equalTo(anEmail()));
-        assertThat(account.birthday, equalTo(aDate()));
-        assertThat(account.password, equalTo(aPassword()));
+        assertThat(account.id, is(anID()));
+        assertThat(account.firstname, is(aFirstname()));
+        assertThat(account.lastname, is(aLastname()));
+        assertThat(account.email, is(anEmail()));
+        assertThat(account.birthday, is(aDate()));
+        assertThat(account.password, is(aPassword()));
     }
 
     private static long anID() {
