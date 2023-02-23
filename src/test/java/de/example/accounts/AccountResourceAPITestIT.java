@@ -22,7 +22,7 @@ import static org.hamcrest.core.StringEndsWith.endsWith;
 @QuarkusIntegrationTest
 @QuarkusTestResource(H2DatabaseTestResource.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class AccountResourceAPITest {
+public class AccountResourceAPITestIT {
 
     @Test
     @Order(1)
