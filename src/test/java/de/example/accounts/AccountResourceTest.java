@@ -2,157 +2,87 @@ package de.example.accounts;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
-import io.restassured.http.ContentType;
+import org.jboss.resteasy.reactive.RestResponse;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import javax.inject.Inject;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 import java.time.LocalDate;
+import java.util.List;
 
-import static io.restassured.RestAssured.given;
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.core.StringEndsWith.endsWith;
-import static org.jboss.resteasy.reactive.RestResponse.StatusCode;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.mock;
 
 @QuarkusTest
 public class AccountResourceTest {
+
+    @Inject
+    AccountResource sut;
 
     @InjectMock
     AccountService accountService;
 
     @Test
-    public void itListsNoUsers() {
-        Mockito.when(accountService.listAll()).thenReturn(emptyList());
+    public void itListsTheUsers() {
+        List<Account> expectedAccounts = asList(anAccount(), anotherAccount());
+        Mockito.when(accountService.listAll()).thenReturn(expectedAccounts);
 
-        given()
-                .when().get("/account/users")
-                .then()
-                .statusCode(StatusCode.OK)
-                .body("", is(empty()));
+        List<Account> accounts = sut.listUsers();
 
+        assertThat(accounts, equalTo(expectedAccounts));
         Mockito.verify(accountService).listAll();
     }
 
     @Test
-    public void itListsASingleUser() {
-        Mockito.when(accountService.listAll()).thenReturn(singletonList(anAccount()));
+    public void itGetsAUser() {
+        Mockito.when(accountService.get(1L)).thenReturn(anAccount());
 
-        given()
-                .when().get("/account/users")
-                .then()
-                .statusCode(StatusCode.OK)
-                .body("", hasSize(1),
-                        "[0].id", is(0),
-                        "[0].firstname", is("Chuck"),
-                        "[0].lastname", is("Norris"),
-                        "[0].email", is("chuck@norris.com"),
-                        "[0].birthday", is("1940-03-10"),
-                        "[0].password", is("TopSecret"));
+        Account account = sut.listUsers(1L);
 
-        Mockito.verify(accountService).listAll();
+        assertThat(account, equalTo(anAccount()));
+        Mockito.verify(accountService).get(1L);
     }
 
     @Test
-    public void itListsTwoUsers() {
-        Mockito.when(accountService.listAll()).thenReturn(asList(anAccount(), anotherAccount()));
-
-        given()
-                .when().get("/account/users")
-                .then()
-                .statusCode(StatusCode.OK)
-                .body("", hasSize(2),
-                        "[0].id", is(0),
-                        "[0].firstname", is("Chuck"),
-                        "[0].lastname", is("Norris"),
-                        "[0].email", is("chuck@norris.com"),
-                        "[0].birthday", is("1940-03-10"),
-                        "[0].password", is("TopSecret"),
-                        "[1].id", is(1),
-                        "[1].firstname", is("Linda"),
-                        "[1].lastname", is("Hamilton"),
-                        "[1].email", is("linda@hamilton.com"),
-                        "[1].birthday", is("1956-09-26"),
-                        "[1].password", is("UltraViolet"));
-
-        Mockito.verify(accountService).listAll();
-    }
-
-    @Test
-    public void itGetsAnExistingUser() {
-        Mockito.when(accountService.get(0L)).thenReturn(anAccount());
-
-        given()
-                .when().get("/account/users/0")
-                .then()
-                .statusCode(StatusCode.OK)
-                .body("id", is(0),
-                        "firstname", is("Chuck"),
-                        "lastname", is("Norris"),
-                        "email", is("chuck@norris.com"),
-                        "birthday", is("1940-03-10"),
-                        "password", is("TopSecret"));
-
-        Mockito.verify(accountService).get(0L);
-    }
-
-    @Test
-    public void itReportsNotFoundForAMissingUser() {
+    public void itReportsAMissingUser() {
         Mockito.when(accountService.get(123L)).thenThrow(new NotFoundException());
 
-        given()
-                .when().get("/account/users/123")
-                .then()
-                .statusCode(StatusCode.NOT_FOUND);
+        assertThrows(NotFoundException.class, () -> sut.listUsers(123L));
 
         Mockito.verify(accountService).get(123L);
     }
 
     @Test
-    public void itUpdatesAnExistingUser() {
-        Mockito.doNothing().when(accountService).update(eq(0L), isA(Account.class));
+    public void itUpdatesAnUser() {
+        Mockito.doNothing().when(accountService).update(eq(1L), isA(Account.class));
 
-        given().contentType(ContentType.JSON)
-                .body(aJSONAccount())
-                .when().put("/account/users/0")
-                .then()
-                .statusCode(StatusCode.OK);
+        sut.updateUser(1L, null, anAccount());
 
-        Mockito.verify(accountService).update(eq(0L), isA(Account.class));
-    }
-
-    @Test
-    public void itReportsNotFoundWhenUpdatingAMissingUser() {
-        Mockito.doThrow(new NotFoundException()).when(accountService).update(eq(123L), isA(Account.class));
-
-        given().contentType(ContentType.JSON)
-                .body(aJSONAccount())
-                .when().put("/account/users/123")
-                .then()
-                .statusCode(StatusCode.NOT_FOUND);
-
-        Mockito.verify(accountService).update(eq(123L), isA(Account.class));
+        Mockito.verify(accountService).update(eq(1L), eq(anAccount()));
     }
 
     @Test
     public void itCreatesAUser() {
-        given().contentType(ContentType.JSON)
-                .body(aJSONAccount())
-                .when().post("/account/users")
-                .then().statusCode(StatusCode.CREATED)
-                .header("Location", endsWith("0"));
+        UriInfo uriInfoMock = mock(UriInfo.class);
+        Mockito.when(uriInfoMock.getAbsolutePathBuilder())
+                .thenReturn(UriBuilder.fromPath("test/users"));
+
+        RestResponse restResponse = sut.createUser(uriInfoMock, aNewAccount());
 
         Mockito.verify(accountService).create("Chuck",
                 "Norris",
                 "chuck@norris.com",
                 LocalDate.parse("1940-03-10"),
                 "TopSecret");
+        assertThat(restResponse.getLocation().getRawPath(), equalTo("test/users/0"));
     }
 
     private Account anAccount() {
@@ -184,13 +114,13 @@ public class AccountResourceTest {
         return account;
     }
 
-    private String aJSONAccount() {
-        return "{" +
-                "\"firstname\": \"Chuck\"," +
-                "\"lastname\": \"Norris\"," +
-                "\"email\": \"chuck@norris.com\"," +
-                "\"birthday\": \"1940-03-10\"," +
-                "\"password\": \"TopSecret\"" +
-                "}";
+    private AccountResource.NewAccount aNewAccount() {
+        AccountResource.NewAccount account = new AccountResource.NewAccount();
+        account.firstname = "Chuck";
+        account.lastname = "Norris";
+        account.email = "chuck@norris.com";
+        account.birthday = LocalDate.parse("1940-03-10");
+        account.password = "TopSecret";
+        return account;
     }
 }

@@ -58,7 +58,7 @@ public class AccountResource {
         return RestResponse.ResponseBuilder.created(location).build();
     }
 
-    private static class NewAccount {
+    public static class NewAccount {
         public String firstname;
         public String lastname;
         public String email;
