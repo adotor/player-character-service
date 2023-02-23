@@ -8,12 +8,13 @@ import io.restassured.http.ContentType;
 import org.hamcrest.CoreMatchers;
 import org.jboss.resteasy.reactive.RestResponse;
 import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.TestMethodOrder;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.StringEndsWith.endsWith;
@@ -25,7 +26,7 @@ public class AccountResourceIT {
 
     @Test
     @Order(1)
-    public void itHasInitiallyNoUsers() {
+    public void itListsNoUsers() {
         given()
                 .when().get("/account/users")
                 .then()
@@ -35,7 +36,7 @@ public class AccountResourceIT {
 
     @Test
     @Order(2)
-    public void itCreatesTheFirstUser() {
+    public void itCreatesAUser() {
         given().contentType(ContentType.JSON)
                 .body(aJSONAccount())
                 .when().post("/account/users")
@@ -44,18 +45,52 @@ public class AccountResourceIT {
     }
 
     @Test
-    @Order(2)
-    public void itCreatesTheSecondUser() {
-        given().contentType(ContentType.JSON)
-                .body(anotherJSONAccount())
-                .when().post("/account/users")
-                .then().statusCode(RestResponse.StatusCode.CREATED)
-                .header("Location", endsWith("2"));
+    @Order(3)
+    public void itListsASingleUser() {
+        given()
+                .when().get("/account/users")
+                .then()
+                .statusCode(RestResponse.StatusCode.OK)
+                .body("", hasSize(1),
+                        "[0].id", is(1),
+                        "[0].firstname", is("Chuck"),
+                        "[0].lastname", is("Norris"),
+                        "[0].email", is("chuck@norris.com"),
+                        "[0].birthday", is("1940-03-10"),
+                        "[0].password", CoreMatchers.is(BcryptPasswordMatcher.bcryptHashOf("TopSecret")));
     }
 
     @Test
-    @Order(3)
-    public void itListsBothUsers() {
+    @Order(4)
+    public void itGetsAnExistingUser() {
+        given()
+                .when().get("/account/users/1")
+                .then()
+                .statusCode(RestResponse.StatusCode.OK)
+                .body("id", is(1),
+                        "firstname", is("Chuck"),
+                        "lastname", is("Norris"),
+                        "email", is("chuck@norris.com"),
+                        "birthday", is("1940-03-10"),
+                        "password", CoreMatchers.is(BcryptPasswordMatcher.bcryptHashOf("TopSecret")));
+
+    }
+
+    @Test
+    @Order(5)
+    public void itUpdatesAnExistingUser() {
+        given().contentType(ContentType.JSON)
+                .body(anotherJSONAccount())
+                .when().put("/account/users/1")
+                .then()
+                .statusCode(RestResponse.StatusCode.OK);
+    }
+
+    @Test
+    @Order(6)
+    public void itListsTwoUsers() {
+        createAccount(aJSONAccount());
+
         given()
                 .when().get("/account/users")
                 .then()
@@ -82,6 +117,25 @@ public class AccountResourceIT {
                 .when().get("/account/users/123")
                 .then()
                 .statusCode(RestResponse.StatusCode.NOT_FOUND);
+    }
+
+    @Test
+    @Order(8)
+    public void itReportsNotFoundWhenUpdatingAMissingUser() {
+        given().contentType(ContentType.JSON)
+                .body(aJSONAccount())
+                .when().put("/account/users/123")
+                .then()
+                .statusCode(RestResponse.StatusCode.NOT_FOUND);
+    }
+
+
+    private void createAccount(String json) {
+        given().contentType(ContentType.JSON)
+                .body(json)
+                .when().post("/account/users")
+                .then().statusCode(RestResponse.StatusCode.CREATED)
+                .header("Location", is(notNullValue()));
     }
 
     private String aJSONAccount() {
