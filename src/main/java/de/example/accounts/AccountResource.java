@@ -16,19 +16,19 @@ import java.util.List;
 @Path("/account/users")
 public class AccountResource {
     @Inject
-    AccountService accountService;
+    AccountRepository accountRepository;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<Account> listUsers() {
-        return accountService.listAll();
+        return accountRepository.listAll();
     }
 
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Account listUsers(@RestPath Long id) {
-        return accountService.get(id);
+        return accountRepository.get(id);
     }
 
     @PUT
@@ -37,7 +37,7 @@ public class AccountResource {
     public RestResponse updateUser(@RestPath Long id,
                                    @Context UriInfo uriInfo,
                                    Account user) {
-        accountService.update(id, user);
+        accountRepository.update(id, user);
 
         return RestResponse.ResponseBuilder.ok().build();
     }
@@ -46,7 +46,7 @@ public class AccountResource {
     @Produces(MediaType.APPLICATION_JSON)
     public RestResponse createUser(@Context UriInfo uriInfo,
                                    NewAccount newAccount) {
-        Long id = accountService.create(newAccount.firstname,
+        Long id = accountRepository.create(newAccount.firstname,
                 newAccount.lastname,
                 newAccount.email,
                 newAccount.birthday,

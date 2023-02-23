@@ -10,7 +10,7 @@ import java.util.Optional;
 import static io.quarkus.elytron.security.common.BcryptUtil.bcryptHash;
 
 @ApplicationScoped
-public class AccountService {
+public class AccountRepository {
 
     public List<Account> listAll() {
         List<AccountEntity> listAll = AccountEntity.listAll();

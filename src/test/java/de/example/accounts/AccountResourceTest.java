@@ -28,45 +28,45 @@ public class AccountResourceTest {
     AccountResource sut;
 
     @InjectMock
-    AccountService accountService;
+    AccountRepository accountRepository;
 
     @Test
     public void itListsTheUsers() {
         List<Account> expectedAccounts = asList(anAccount(), anotherAccount());
-        Mockito.when(accountService.listAll()).thenReturn(expectedAccounts);
+        Mockito.when(accountRepository.listAll()).thenReturn(expectedAccounts);
 
         List<Account> accounts = sut.listUsers();
 
         assertThat(accounts, equalTo(expectedAccounts));
-        Mockito.verify(accountService).listAll();
+        Mockito.verify(accountRepository).listAll();
     }
 
     @Test
     public void itGetsAUser() {
-        Mockito.when(accountService.get(1L)).thenReturn(anAccount());
+        Mockito.when(accountRepository.get(1L)).thenReturn(anAccount());
 
         Account account = sut.listUsers(1L);
 
         assertThat(account, equalTo(anAccount()));
-        Mockito.verify(accountService).get(1L);
+        Mockito.verify(accountRepository).get(1L);
     }
 
     @Test
     public void itReportsAMissingUser() {
-        Mockito.when(accountService.get(123L)).thenThrow(new NotFoundException());
+        Mockito.when(accountRepository.get(123L)).thenThrow(new NotFoundException());
 
         assertThrows(NotFoundException.class, () -> sut.listUsers(123L));
 
-        Mockito.verify(accountService).get(123L);
+        Mockito.verify(accountRepository).get(123L);
     }
 
     @Test
     public void itUpdatesAnUser() {
-        Mockito.doNothing().when(accountService).update(eq(1L), isA(Account.class));
+        Mockito.doNothing().when(accountRepository).update(eq(1L), isA(Account.class));
 
         sut.updateUser(1L, null, anAccount());
 
-        Mockito.verify(accountService).update(eq(1L), eq(anAccount()));
+        Mockito.verify(accountRepository).update(eq(1L), eq(anAccount()));
     }
 
     @Test
@@ -77,7 +77,7 @@ public class AccountResourceTest {
 
         RestResponse restResponse = sut.createUser(uriInfoMock, aNewAccount());
 
-        Mockito.verify(accountService).create("Chuck",
+        Mockito.verify(accountRepository).create("Chuck",
                 "Norris",
                 "chuck@norris.com",
                 LocalDate.parse("1940-03-10"),
