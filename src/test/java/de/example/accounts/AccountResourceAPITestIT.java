@@ -8,8 +8,8 @@ import io.restassured.http.ContentType;
 import org.hamcrest.CoreMatchers;
 import org.jboss.resteasy.reactive.RestResponse;
 import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
 import static io.restassured.RestAssured.given;
@@ -131,7 +131,7 @@ public class AccountResourceAPITestIT {
 
     @Test
     @Order(9)
-    public void itRejectsNewUsersWithNonMatchingPasswords() {
+    public void itRejectsANewUserWithNonMatchingPasswords() {
         given().contentType(ContentType.JSON)
                 .body(aJSONAccountWithNonMatchingPasswords())
                 .when().post("/account/users")
