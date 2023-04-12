@@ -1,6 +1,6 @@
-package de.example.accounts;
+package de.example.pc;
 
-class AccountRepositoryTest {
+class PlayerCharacterRepositoryTest {
 
     // Discussion: Design for testing (unable tot test static implicit dependencies)
 }

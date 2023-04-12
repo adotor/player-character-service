@@ -1,4 +1,4 @@
-# example account-service project
+# example playerCharacter-service project
 
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 

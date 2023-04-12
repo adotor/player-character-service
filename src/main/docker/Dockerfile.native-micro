@@ -10,11 +10,11 @@
 #
 # Then, build the image with:
 #
-# docker build -f src/main/docker/Dockerfile.native-micro -t quarkus/account-service .
+# docker build -f src/main/docker/Dockerfile.native-micro -t quarkus/playerCharacter-service .
 #
 # Then run the container using:
 #
-# docker run -i --rm -p 8080:8080 quarkus/account-service
+# docker run -i --rm -p 8080:8080 quarkus/playerCharacter-service
 #
 ###
 FROM quay.io/quarkus/quarkus-micro-image:1.0
