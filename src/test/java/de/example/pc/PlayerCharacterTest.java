@@ -6,6 +6,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class PlayerCharacterTest {
     @Test
     public void testMe() {
-        assertThat("Bin dann im Urlaub. Bitte noch irgendjemand testen.", true);
+        assertThat("Bin im Urlaub. Bitte noch irgendjemand testen.", true);
     }
 }
