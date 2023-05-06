@@ -30,24 +30,16 @@ public class PlayerCharacter {
      *
      * PC vom 5. Jahrestag kriegen nochmal 5 Level geschenkt.
      *
+     * Weil bei einer neuen Expansion die PC immer neu importiert werden, lässt sich die
+     * Expansion am creationDate erkennen. TODO: Enum für Expansion einbauen. Max Level als value?
+     *
      * @return true, wenn PC maximalen Level hat.
      */
     public boolean isMaximumLevel() {
-        int maxLevel = 100;
-
-        if (creationDate.isBefore(Dates.FIRST_EXPANSION_DATE)) {
-            maxLevel = 60;
-        }
-
-        if (creationDate.isBefore(Dates.SECOND_EXPANSION_DATE)) {
-            maxLevel = 80;
-        }
-
-        if (creationDate.isEqual(Dates.FIFTH_ANNIVERSARY_DATE)) {
-            maxLevel = maxLevel + 5;
-        }
-
-        return this.level == maxLevel;
+        return creationDate.isBefore(Dates.FIRST_EXPANSION_DATE) && level == 60
+                || creationDate.isBefore(Dates.SECOND_EXPANSION_DATE) && level == 80
+                || creationDate.isEqual(Dates.FIFTH_ANNIVERSARY_DATE) && level == 105
+                || level == 100;
     }
 
     // Konnte ich mit der IDE generieren (Generate equals/hashCode). Spart Tipparbeit.
