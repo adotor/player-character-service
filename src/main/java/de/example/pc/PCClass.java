@@ -1,7 +1,14 @@
 package de.example.pc;
 
 public enum PCClass {
-    FIGHTER,
-    WIZARD,
-    CLERIC
+    FIGHTER(false),
+    THIEF(false),
+    WIZARD(true),
+    CLERIC(true);
+
+    public final boolean isSpellcaster;
+
+    PCClass(boolean isSpellcaster) {
+        this.isSpellcaster = isSpellcaster;
+    }
 }
