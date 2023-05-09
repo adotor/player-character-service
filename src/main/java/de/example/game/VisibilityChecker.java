@@ -7,7 +7,8 @@ import java.time.LocalTime;
 import java.util.List;
 
 public class VisibilityChecker {
-
+    public static VisibilityChecker shared = new VisibilityChecker();
+    private VisibilityChecker() {}
     public boolean isMonsterVisible(PlayerCharacter pc, List<Monster> enemies) {
         LocalTime now = LocalTime.now();
 
