@@ -36,9 +36,9 @@ public class PlayerCharacter {
      * @return true, wenn PC maximalen Level hat.
      */
     public boolean isMaximumLevel() {
-        return creationDate.isBefore(Dates.FIRST_EXPANSION_DATE) && level == 60
-                || creationDate.isBefore(Dates.SECOND_EXPANSION_DATE) && level == 80
-                || creationDate.isEqual(Dates.FIFTH_ANNIVERSARY_DATE) && level == 105
+        return creationDate.isBefore(ImportantDates.FIRST_EXPANSION_DATE) && level == 60
+                || creationDate.isBefore(ImportantDates.SECOND_EXPANSION_DATE) && level == 80
+                || creationDate.isEqual(ImportantDates.FIFTH_ANNIVERSARY_DATE) && level == 105
                 || level == 100;
     }
 
@@ -56,9 +56,4 @@ public class PlayerCharacter {
         return Objects.hash(id, name, level, creationDate, pcClass);
     }
 
-    private class Dates {
-        private static final LocalDate FIRST_EXPANSION_DATE = LocalDate.of(2021, 4, 1);
-        private static final LocalDate SECOND_EXPANSION_DATE = LocalDate.of(2022, 12, 24);
-        private static final LocalDate FIFTH_ANNIVERSARY_DATE = LocalDate.of(2023, 3, 3);
-    }
 }
