@@ -2,7 +2,6 @@ package de.example.pc;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Objects;
 
 public class PlayerCharacter {
     public Long id;
@@ -26,19 +25,18 @@ public class PlayerCharacter {
      * Am restlichen Tag sind es 1600 Einheiten.
      *
      * @return Sichtweite in interner Masseinheit
+     * @param time
      */
-    public int getVisionRange() {
-        LocalTime now = LocalTime.now();
-        
-        if (now.isAfter(LocalTime.of(21,59))
-                && now.isBefore(LocalTime.of(5,0))) {
+    public int getVisionRange(LocalTime time) {
+        if (time.isAfter(LocalTime.of(21,59))
+                && time.isBefore(LocalTime.of(5,0))) {
             return 200;
         }
 
-        if (now.isAfter(LocalTime.of(19,59))
-                && now.isBefore(LocalTime.of(22,0)) ||
-                now.isAfter(LocalTime.of(4,59))
-                        && now.isBefore(LocalTime.of(7,0))) {
+        if (time.isAfter(LocalTime.of(19,59))
+                && time.isBefore(LocalTime.of(22,0)) ||
+                time.isAfter(LocalTime.of(4,59))
+                        && time.isBefore(LocalTime.of(7,0))) {
             return 800;
         }
 
